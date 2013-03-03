@@ -2,4 +2,10 @@
     "name": "pi-led",
     "version": "1.0.0",
     "main": "./pi-led.js"
+    "author": "Luke Berndt <luke@lukeberndt.com>",
+    "description": "Connect LED Message Boards to your Raspberry PI using the SPI bus",
+    "repository": {
+	    "type": "git",
+	    "url": "https://github.com/robotastic/pi-led.git"
+  	},
 }
