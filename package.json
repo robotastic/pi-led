@@ -1,0 +1,5 @@
+{
+    "name": "pi-led",
+    "version": "1.0.0",
+    "main": "./pi-led.js"
+}
