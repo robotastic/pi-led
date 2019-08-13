@@ -1,15 +1,10 @@
 #include <node/node.h>
 #include <node/node_object_wrap.h>
+#include <napi.h>
 
-// C standard library
-#include <cstdlib>
-#include <ctime>
-#include <errno.h>
 
-#include <stdint.h>
-#include <stdlib.h>
-#include <cstring>
-#include <iostream>
+
+#include "led-matrix.h"
 
 using namespace std;
 using namespace v8;
@@ -21,392 +16,76 @@ extern "C"  {
 #include "wiringPi.h"
 }
 
-#include "bit_array.hpp"
-#include "font.h"
 
 
+class PiLed : public Napi::ObjectWrap<PiLed> {
+ public:
+  static Napi::Object Init(Napi::Env env, Napi::Object exports); //Init function for setting the export key to JS
+  PiLed(const Napi::CallbackInfo& info); //Constructor to initialise
 
-#define COMMAND 0x4
-#define RD 0x6
-#define WR 0x5
-#define SYS_DIS 0x00
-#define COMMON_8NMOS 0x20
-#define COMMON_8PMOS 0x28
-#define MASTER_MODE 0x14
-#define INT_RC 0x18
-#define SYS_EN 0x01
-#define LED_ON 0x03
-#define LED_OFF 0x02
-#define PWM_CONTROL 0xA0
-#define BLINK_ON 0x09
-#define BLINK_OFF 0x08
-
-
-class LedModule {
-
-public:
-LedModule();
-LedModule(uint8_t chip, uint8_t width, uint8_t hieght);
-~LedModule();
-void clearMatrix();
-void writeMatrix();
-void printMatrix(unsigned char output[][129]);
-void init();
-void drawPixel(uint8_t x, uint8_t y, uint8_t color);
-void setBrightness(uint8_t pwm);
-void blink(int blinky);
-void setChip(uint8_t c);
-uint8_t scrollMatrixOnce(uint8_t shift);
-private:
-  uint8_t width, height, chip;
-  uint8_t matrix[32]; // we are assuming the width is 32 and the height is 8
-  void *reverseEndian(void *p, size_t size); 
-void selectChip();
-void sendCommand( uint8_t cmd);
+ private:
+  static Napi::FunctionReference constructor; //reference to store the class definition that needs to be exported to JS
+  Napi::Value WriteMatrix(const Napi::CallbackInfo& info); //wrapped add function
+  LedMatrix *ledMatrix_;
 };
 
-void LedModule::setChip(uint8_t c){
-	chip = c;
+
+Napi::FunctionReference PiLed::constructor;
+
+Napi::Object PiLed::Init(Napi::Env env, Napi::Object exports) {
+  Napi::HandleScope scope(env);
+
+  Napi::Function func = DefineClass(env, "PiLed", {
+    InstanceMethod("writeMatrix", &PiLed::WriteMatrix)
+  });
+
+  constructor = Napi::Persistent(func);
+  constructor.SuppressDestruct();
+
+  exports.Set("PiLed", func);
+  return exports;
 }
 
-void * LedModule::reverseEndian(void *p, size_t size) {
-  char *head = (char *)p;
-  char *tail = head + size -1;
 
-  for(; tail > head; --tail, ++head) {
-    char temp = *head;
-    *head = *tail;
-    *tail = temp;
-  }
-  return p;
-}
-void LedModule::selectChip()
-{
-	
-  switch (chip) {
-  case 0:
- digitalWrite(0,0);
- digitalWrite(1,0);
+PiLed::PiLed(const Napi::CallbackInfo& info) : Napi::ObjectWrap<PiLed>(info)  {
+  Napi::Env env = info.Env();
+  Napi::HandleScope scope(env);
 
-    break;
-
-  case 1:
-
- digitalWrite(0,0); 
-digitalWrite(1,1);
-
-    break;
-
-  case 2:
- digitalWrite(0,1);
- digitalWrite(1,0);
-    break;
-
-  case 3:
- digitalWrite(0,1);
- digitalWrite(1,1);
-    break;
-
-
-  }
+  int length = info.Length();
   
-}
-
-void LedModule::clearMatrix()
-{
-  memset(matrix,0,(width * height) /8);
-}
-
-void LedModule::drawPixel(uint8_t x, uint8_t y, uint8_t color) {
-  if (y >= height) return;
-  if (x >= width) return;
-
-
-  if (color) {
-    *(matrix + x) = *(matrix + x) | (1 << y); // find the bit in the byte that needs to be turned on;
-  }else {
-   *(matrix + x) = *(matrix + x) & ~(1 << y); // find the bit in the byte that needs to be turned on;
+  if (length != 1) {
+    Napi::TypeError::New(env, "Only one argument expected").ThrowAsJavaScriptException();
   }
 
-
-
-}
-
-uint8_t LedModule::scrollMatrixOnce(uint8_t shift) {
-  int n;
-  uint8_t temp;
-
-  
-
-for(n=width-1;n>-1;n--) {
-	temp = matrix[n];
-	matrix[n] = shift;
-	shift = temp;
-}
- return shift;
- }
-
-void LedModule::printMatrix(unsigned char output[][129]) {
-	uint8_t byte;
-	for (int col=0; col < width; col++) {
-		byte = matrix[col];
-		for (int row=0; row < height; row++) {
-			if ((byte &0x80) != 0) {
-				output[row][col + (width * chip)] = 248;
-			} else {
-				output[row][col + (width * chip)] = ' ';
-			}
-
-			byte = byte << 1;
-		}
-	}
-}
-
-void LedModule::writeMatrix(){
-  int size = width * height / 8;
-  uint8_t *output = (uint8_t *) malloc(size+2);
-  uint16_t data;
-  uint8_t write;
-
-  *output = 160;
-  *(output+1) = 0;
-
-
-  
-  bitarray_copy(matrix, 0, width * height, (output+1), 2);
-  selectChip();
-  //sendCommand(LED_OFF);
-  wiringPiSPIDataRW(0,output,size+1);
-  
-  data = WR;
-  data <<= 7;
-  data |= 63; //last address on screen
-  data <<= 4;
-  write = (0x0f & *(matrix+31));
-  data |= write;
-  data <<= 2;
-
-  reverseEndian(&data, sizeof(data));
-  wiringPiSPIDataRW(0, (uint8_t *) &data, 2);
-  //sendCommand(LED_ON);
-  free(output);
-}
-void LedModule::sendCommand( uint8_t cmd) {
-  uint16_t data=0;
-
-  data = COMMAND;
-
-  data <<= 8;
-  data |= cmd;
-  data <<= 5;
- 
-
-  reverseEndian(&data, sizeof(data));
-  selectChip();
-  wiringPiSPIDataRW(0, (uint8_t *) &data, 2);
- 
-}
-
-void LedModule::blink(int blinky) {
-  if (blinky)
-    sendCommand(BLINK_ON);
-  else
-    sendCommand(BLINK_OFF);
-}
-
-void LedModule::setBrightness(uint8_t pwm) {
-  if (pwm > 15)
-{
- pwm = 15;
- }
-  
-  sendCommand(PWM_CONTROL | pwm);
-}
-void LedModule::init(){
- sendCommand(SYS_EN);
- sendCommand(LED_ON);
- sendCommand(MASTER_MODE);
- sendCommand(INT_RC);
- sendCommand(COMMON_8NMOS);
- blink(0);
- setBrightness(15);
-}
-LedModule::LedModule() {
-	chip = -1;
-	width = 32;
-	height = 8;
-}
-LedModule::~LedModule() {
-
-}
-LedModule::LedModule(uint8_t c, uint8_t w, uint8_t h) {
-	chip = c;
-	width = w;
-	height = h;
-}
-
-class LedMatrix {
-
-public:
-	LedMatrix(int modules);
-	~LedMatrix();
-	void writeMessage(char *message);
-	void drawPixel(uint8_t x, uint8_t y, uint8_t color);
-	void writeMatrix(); 
-	void printMatrix();
-	void clearMatrix();
-private:
-	void drawChar(char c, int offset, uint8_t *buf);
-	void scrollMatrixOnce(int offset);
-	
-	LedModule *modules;
-	uint8_t offscreen[8]; // font width;
-	int moduleNum;
-	uint8_t fontWidth, _width, _height;
-};
-
-LedMatrix::LedMatrix(int m) {
-	int i;
-	moduleNum = m;
-	_width = 32*moduleNum;
-	_height = 8;
-modules = new LedModule[m];
-	fontWidth = 8;
-
-
-if (wiringPiSPISetup(0, 256000) <0)
-  cout <<  "SPI Setup Failed: " <<  strerror(errno) << endl;
-
- if (wiringPiSetup() == -1)
-   exit(1);
- pinMode(0, OUTPUT);
- pinMode(1, OUTPUT);
-
-
-for (i=0; i < m; i++) {
-	modules[i].setChip(i);
-	modules[i].init();
-}
-
-}
-
-LedMatrix::~LedMatrix() {
-	delete []modules;
-}
-
-void LedMatrix::drawPixel(uint8_t x, uint8_t y, uint8_t color) {
-  if (y >= _height) return;
-  if (x >= _width) return;
-
-  uint8_t m;
-  // figure out which matrix controller it is
-  m = x / 32;
-	x %= 32;
-	modules[m].drawPixel(x, y, color);
- }
-
-void LedMatrix::writeMatrix() {
-	
- for (int i=0; i < moduleNum; i++) {
- 	modules[i].writeMatrix();
- }
- 	//printMatrix();
-}
-
-void LedMatrix::printMatrix() {
-	unsigned char output[8][128+1];
-
-	for (int i=0; i < moduleNum; i++) {
-		modules[i].printMatrix(output);
-	}
-
-
-	for (int i=0; i < _height; i++ ){
-		output[i][_width] = '\0';
-		//cout << strlen(output[i]) << endl;
-		cout << output[i] << endl;
-		//printf("%s \n",output[i]);
-	}
-}
-
-void LedMatrix::clearMatrix() {
-	
- for (int i=0; i < moduleNum; i++) {
- 	modules[i].clearMatrix();
- }
-}
-
-void LedMatrix::scrollMatrixOnce(int offset) {
-  int n;
-
-if (offset >= fontWidth)
-	return;
-
-uint8_t temp = offscreen[offset];
-
-for(n=moduleNum;n>0;n--) {
-temp = modules[n-1].scrollMatrixOnce(temp); // n-1 since the matrix is 0 based
-}
- 
-
-  writeMatrix();
-  usleep(12500);
-}
-
-void LedMatrix::drawChar(char c, int offset, uint8_t *buf) {
-  int row, col,x,y;
-  memset(buf,0,8);
-     for (row=0; row<8; row++) {
-	uint8_t z = fontData[(int8_t) c][row];
-	for(col=0; col<8; col++) {
-	  x = offset * fontWidth + col;
-	  y = 8 - row;
-
-	  if ((z &0x80) != 0) {
-	    *(buf + x) = *(buf + x) | (1 << y); // find the bit in the byte that needs to be turned on;
-	  }else {
-	    *(buf + x) = *(buf + x) & ~(1 << y); // find the bit in the byte that needs to be turned on;
-	  }
-	
-	  z = z <<1;
-	}
-     }
-}
-
-void LedMatrix::writeMessage(char *message) {
-  int display_len = 16;//width*displays/font_width;
-  int i, pix;
-  int msg_len = strlen(message);
-
-
-for (i=0; i < display_len; i++) {
-	modules[i].init();
-} 
-
- clearMatrix();
-
-  for (i=0; i < msg_len; i++ ) {
-
-      char c = message[i];
-      drawChar(c, 0, offscreen);
-
-      for (pix = 0; pix < fontWidth; pix++){
-	scrollMatrixOnce(pix);
-      }
-  }
-  
-  for (i=0; i < display_len; i++ ) {
-
-      char c = ' ';
-      drawChar(c, 0, offscreen);
-
-      for (pix = 0; pix < fontWidth; pix++){
-  scrollMatrixOnce(pix);
-      }
+  if(!info[0].IsNumber()){
+    Napi::Object object_parent = info[0].As<Napi::Object>();
+    PiLed* example_parent = Napi::ObjectWrap<PiLed>::Unwrap(object_parent);
+    LedMatrix* parent_led_matrix_instance = example_parent->GetInternalInstance();
+    this->ledMatrix_ = new LedMatrix(parent_led_matrix_instance->getValue());
+    return;
   }
 
+  Napi::Number value = info[0].As<Napi::Number>();
+  this->ledMatrix_ = new LedMatrix(value.DoubleValue());
 }
 
+Napi::Value PiLed::WriteMatrix(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
+  Napi::HandleScope scope(env);
+
+  if (info.Length() != 1 || !info[0].IsString()) {
+    Napi::TypeError::New(env, "String expected").ThrowAsJavaScriptException();
+  }
+
+  Napi::String toWriteMatrix = info[0].As<Napi::String>();
+  bool answer = this->ledMatrix_->writeMatrix(toWriteMatrix.string());
+
+  return Napi::Number::New(info.Env(), answer);
+}
+
+LedMatrix* PiLed::GetInternalInstance() {
+  return this->ledMatrix_;
+}
 
 
 namespace {
@@ -439,14 +118,14 @@ static LedMatrix *matrix;
 class PiLed: public ObjectWrap {
 public:
   
-  static Handle<Value> New(const Arguments& args);
-  static Handle<Value> WriteMessage(const Arguments& args);
+  static Handle<Value> New(const FunctionCallbackInfo<Value>& args);
+  static Handle<Value> WriteMessage(const FunctionCallbackInfo<Value>& args);
   static void AsyncWork(uv_work_t* req);
   static void AsyncAfter(uv_work_t* req);
 };
 
 
-Handle<Value> PiLed::New(const Arguments& args) {
+Handle<Value> PiLed::New(const FunctionCallbackInfo<Value>& args) {
   HandleScope scope;
 
   assert(args.IsConstructCall());
@@ -607,7 +286,9 @@ void PiLed::AsyncAfter(uv_work_t* req) {
 
 
 
-
+Napi::Object RegisterModule(Napi::Env env, Napi::Object exports) {
+  return exports;
+}
 void RegisterModule(Handle<Object> target) {
    HandleScope scope;
 
@@ -620,7 +301,8 @@ void RegisterModule(Handle<Object> target) {
 
 }
 
-NODE_MODULE(PiLed, RegisterModule);
+
+NODE_API_MODULE(PiLed, RegisterModule);
 }
 
 

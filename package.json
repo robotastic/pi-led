@@ -5,7 +5,13 @@
     "author": "Luke Berndt <luke@lukeberndt.com>",
     "description": "Connect LED Message Boards to your Raspberry PI using the SPI bus",
     "repository": {
-	    "type": "git",
-	    "url": "https://github.com/robotastic/pi-led.git"
-  	}
+        "type": "git",
+        "url": "https://github.com/robotastic/pi-led.git"
+    },
+    "devDependencies": {
+        "node-gyp": "^5.0.3"
+    },
+    "dependencies": {
+        "node-addon-api": "^1.7.1"
+      }
 }

@@ -3,7 +3,11 @@
     {
       "target_name": "PiLed",
       "sources": [ "pi-led.cpp" ],
-      "dependencies": ["bit_array", "wiringPi", "wiringPiSPI"]
+      "dependencies": ["bit_array", "wiringPi", "wiringPiSPI", "<!(node -p \"require('node-addon-api').gyp\")"],
+      'include_dirs': [
+            "<!@(node -p \"require('node-addon-api').include\")"
+      ],
+      'defines': [ 'NAPI_DISABLE_CPP_EXCEPTIONS' ]
     },
     {
       "target_name": "bit_array",
