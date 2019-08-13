@@ -1,11 +1,13 @@
 #include <node/node.h>
 #include <node/node_object_wrap.h>
+#include <uv.h>
 
 // C standard library
 #include <cstdlib>
 #include <ctime>
 #include <errno.h>
-
+#include <time.h>
+#include <unistd.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <cstring>
@@ -411,6 +413,8 @@ for (i=0; i < display_len; i++) {
 
 namespace {
 
+using v8::FunctionCallbackInfo;
+
 // We use a struct to store information about the asynchronous "work request".
 struct Baton {
     // This handle holds the callback function we'll call after the work request
@@ -439,15 +443,15 @@ static LedMatrix *matrix;
 class PiLed: public ObjectWrap {
 public:
   
-  static Handle<Value> New(const Arguments& args);
-  static Handle<Value> WriteMessage(const Arguments& args);
+  static Handle<Value> New(const FunctionCallbackInfo<Value>& args);
+  static Handle<Value> WriteMessage(const FunctionCallbackInfo<Value>& args);
   static void AsyncWork(uv_work_t* req);
   static void AsyncAfter(uv_work_t* req);
 };
 
 
-Handle<Value> PiLed::New(const Arguments& args) {
-  HandleScope scope;
+Handle<Value> PiLed::New(const FunctionCallbackInfo<Value>& args) {
+  EscapableHandleScope handle_scope(isolate);
 
   assert(args.IsConstructCall());
   PiLed* self = new PiLed();
@@ -455,13 +459,13 @@ Handle<Value> PiLed::New(const Arguments& args) {
 
   matrix = new LedMatrix(4);
 
-  return scope.Close(args.This());
+  return handle_scope.Escape(args.This());
 }
 
 
 // emits ping event
-Handle<Value> PiLed::WriteMessage(const Arguments& args) {
-  HandleScope scope;
+Handle<Value> PiLed::WriteMessage(const FunctionCallbackInfo<Value>& args) {
+  EscapableHandleScope handle_scope(isolate);
 
   if (args.Length() < 2) {
         // No argument was passed. Throw an exception to alert the user to
@@ -539,7 +543,7 @@ void PiLed::AsyncWork(uv_work_t* req) {
 // This function is executed in the main V8/JavaScript thread. That means it's
 // safe to use V8 functions again. Don't forget the HandleScope!
 void PiLed::AsyncAfter(uv_work_t* req) {
-    HandleScope scope;
+    EscapableHandleScope handle_scope(isolate);
     Baton* baton = static_cast<Baton*>(req->data);
 
     if (baton->error) {
@@ -609,7 +613,7 @@ void PiLed::AsyncAfter(uv_work_t* req) {
 
 
 void RegisterModule(Handle<Object> target) {
-   HandleScope scope;
+  
 
   Local<FunctionTemplate> t = FunctionTemplate::New(PiLed::New);
   t->InstanceTemplate()->SetInternalFieldCount(1);
