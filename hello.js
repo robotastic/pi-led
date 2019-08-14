@@ -10,9 +10,9 @@ console.log(matrix.PiLed);
 
 
 
-	matrix.PiLed.WriteMessage("Hello!", function(err, result) {
+	matrix.PiLed.writeMessage("Hello!", function(err, result) {
 
-	matrix.PiLed.WriteMessage("Goodbye!", function(err, result) {});
+	matrix.PiLed.writeMessage("Goodbye!", function(err, result) {});
 });
 
 
