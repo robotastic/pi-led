@@ -8,6 +8,9 @@
 #include <stdlib.h>
 #include <cstring>
 #include <iostream>
+#include <nan.h>
+
+NAN_METHOD(WriteMatrix);
 
 class LedMatrix {
 
