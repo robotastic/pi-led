@@ -57,7 +57,7 @@ Napi::Value WriteMessage(const Napi::CallbackInfo& info) {
 
 
 Napi::Object Init(Napi::Env env, Napi::Object exports) {
-  exports.Set(Napi::String::New(env, "writeMatrix"), Napi::Function::New(env, WriteMatrix));
+  exports.Set(Napi::String::New(env, "writeMessage"), Napi::Function::New(env, WriteMessage));
    return exports;
 }
 
