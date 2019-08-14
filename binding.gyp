@@ -14,14 +14,23 @@
     },
    {
       "target_name": "led-matrix",
-
-      "dependencies": ["bit_array", "wiringPi", "wiringPiSPI"],
+      "dependencies": ["bit_array"],
+      'include_dirs': [
+            "<!@(node -p \"require('node-addon-api').include\")",
+            "<!(node -e \"require('nan')\")",
+            "/usr/local/include"
+      ],
       "type": "static_library",
       "sources": [ "led-matrix.cpp" ]
     },
     {
       "target_name": "led-module",
-      "dependencies": ["bit_array", "wiringPi", "wiringPiSPI"],
+      "dependencies": ["bit_array"],
+      'include_dirs': [
+            "<!@(node -p \"require('node-addon-api').include\")",
+            "<!(node -e \"require('nan')\")",
+            "/usr/local/include"
+      ],
       "type": "static_library",
       "sources": [ "led-module.cpp" ]
     },
