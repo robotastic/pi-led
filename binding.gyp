@@ -17,6 +17,7 @@
     },
     {
       "target_name": "led-module",
+      "dependencies": ["bit_array", "wiringPi", "wiringPiSPI"],
       "type": "static_library",
       "sources": [ "led-module.cpp" ]
     },

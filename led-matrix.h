@@ -10,7 +10,6 @@
 #include <iostream>
 #include "led-module.h"
 
-NAN_METHOD(WriteMatrix);
 
 class LedMatrix {
 
