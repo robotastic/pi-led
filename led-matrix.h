@@ -11,9 +11,10 @@
 #include <cstring>
 #include <iostream>
 #include "led-module.h"
-#include "font.h"
+
 
 extern "C"  {
+#include "font.h"
 #include "wiringPiSPI.h"
 #include "wiringPi.h"
 }
