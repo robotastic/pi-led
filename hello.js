@@ -1,17 +1,18 @@
 
-var Matrix = require('./pi-led').PiLed;
+var matrix = require('./pi-led');
+
+
+console.log(matrix.PiLed);
+
+
+//var matrix = new matrix.PiLed();
 
 
 
 
+	matrix.PiLed.WriteMessage("Hello!", function(err, result) {
 
-var matrix = new Matrix();
-
-
-
-	matrix.WriteMessage("Hello!", function(err, result) {
-
-	matrix.WriteMessage("Goodbye!", function(err, result) {});
+	matrix.PiLed.WriteMessage("Goodbye!", function(err, result) {});
 });
 
 

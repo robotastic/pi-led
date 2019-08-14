@@ -3,12 +3,22 @@
     {
       "target_name": "PiLed",
       "sources": [ "pi-led.cpp" ],
-      "dependencies": ["bit_array", "wiringPi", "wiringPiSPI", "<!(node -p \"require('node-addon-api').gyp\")"],
+      "dependencies": ["bit_array", "wiringPi", "wiringPiSPI","led-matrix","led-module", "<!(node -p \"require('node-addon-api').gyp\")"],
       'include_dirs': [
             "<!@(node -p \"require('node-addon-api').include\")",
             "<!(node -e \"require('nan')\")"
       ],
       'defines': [ 'NAPI_DISABLE_CPP_EXCEPTIONS' ]
+    },
+   {
+      "target_name": "led-matrix",
+      "type": "static_library",
+      "sources": [ "led-matrix.cpp" ]
+    },
+    {
+      "target_name": "led-module",
+      "type": "static_library",
+      "sources": [ "led-module.cpp" ]
     },
     {
       "target_name": "bit_array",

@@ -15,14 +15,17 @@
  */
 
 // javascript shim that lets our object inherit from EventEmitter
-var PiLed = require(__dirname + '/build/Release/PiLed.node').PiLed;
+var PiLed = require('bindings')('PiLed');
 var events = require('events');
 
-inherits(PiLed, events.EventEmitter);
+
+//console.log(PiLed);
+//inherits(PiLed, events.EventEmitter);
 exports.PiLed = PiLed;
 
+/*
 // extend prototype
 function inherits(target, source) {
   for (var k in source.prototype)
     target.prototype[k] = source.prototype[k];
-}
+}*/
