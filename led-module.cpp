@@ -22,7 +22,7 @@ void LedModule::clearChip() {
   digitalWrite(2,1);
   digitalWrite(3,1);
 }
-void LedModule::selectChip(int chip)
+void LedModule::selectChip()
 {
   switch (chip) {
   case 0:
