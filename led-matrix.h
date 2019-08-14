@@ -1,3 +1,5 @@
+#ifndef LED_MATRIX_H_
+#define LED_MATRIX_H_
 // C standard library
 #include <cstdlib>
 #include <ctime>
@@ -30,3 +32,4 @@ private:
 	int moduleNum;
 	uint8_t fontWidth, _width, _height;
 };
+#endif

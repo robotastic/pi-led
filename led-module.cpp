@@ -1,5 +1,5 @@
 #include "led-module.h"
-
+using namespace std;
 void LedModule::setChip(uint8_t c){
 	chip = c;
 }

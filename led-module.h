@@ -1,3 +1,5 @@
+#ifndef LED_MODULE_H_
+#define LED_MODULE_H_
 // C standard library
 #include <cstdlib>
 #include <ctime>
@@ -10,7 +12,6 @@
 #include <iostream>
 
 #include "bit_array.hpp"
-#include "font.h"
 
 #define COMMAND 0x4
 #define RD 0x6
@@ -50,3 +51,5 @@ void selectChip();
 void clearChip();
 void sendCommand( uint8_t cmd);
 };
+
+#endif

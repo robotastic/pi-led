@@ -12,6 +12,8 @@
     },
    {
       "target_name": "led-matrix",
+
+      "dependencies": ["bit_array", "wiringPi", "wiringPiSPI"],
       "type": "static_library",
       "sources": [ "led-matrix.cpp" ]
     },

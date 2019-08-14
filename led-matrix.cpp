@@ -1,6 +1,7 @@
 #include "led-module.h"
 #include "led-matrix.h"
 
+using namespace std;
 LedMatrix::LedMatrix(int m) {
 	int i;
 	moduleNum = m;
