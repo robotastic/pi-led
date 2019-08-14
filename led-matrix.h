@@ -18,7 +18,7 @@ class LedMatrix {
 public:
 	LedMatrix(int modules);
 	~LedMatrix();
-	void writeMessage(char *message);
+	void writeMessage(char const *message);
 	void drawPixel(uint8_t x, uint8_t y, uint8_t color);
 	void writeMatrix(); 
 	void printMatrix();

@@ -109,7 +109,7 @@ void LedMatrix::drawChar(char c, int offset, uint8_t *buf) {
      }
 }
 
-void LedMatrix::writeMessage(char *message) {
+void LedMatrix::writeMessage(char const *message) {
   int display_len = 16;//width*displays/font_width;
   int i, pix;
   int msg_len = strlen(message);
