@@ -30,7 +30,7 @@ class PiWorker : public Napi::AsyncWorker {
   // should go on `this`.
   void Execute () {
     ledMatrix = new LedMatrix(4);
-    ledMatrix.writeMessage(message);
+    ledMatrix->writeMessage(message);
   }
 
   // Executed when the async work is complete
@@ -48,7 +48,7 @@ class PiWorker : public Napi::AsyncWorker {
 
 // Asynchronous access to the `Estimate()` function
 Napi::Value WriteMessage(const Napi::CallbackInfo& info) {
-  string message = info[0].As<Napi::String>().string();
+  string message = info[0].As<Napi::String>().Utf8Value();
   Napi::Function callback = info[1].As<Napi::Function>();
   PiWorker* piWorker = new PiWorker(callback, message);
   piWorker->Queue();
@@ -58,14 +58,12 @@ Napi::Value WriteMessage(const Napi::CallbackInfo& info) {
 
 // Expose synchronous and asynchronous access to our
 // Estimate() function
-NAN_MODULE_INIT(InitAll) {
-
-
+Napi::Object Init(Napi::Env env, Napi::Object exports) {
   Set(target, New<String>("writeMatrix").ToLocalChecked(),
     GetFunction(New<FunctionTemplate>(WriteMatrix)).ToLocalChecked());
 }
 
-NODE_MODULE(PiLed, InitAll)
+NODE_MODULE(PiLed, Init)
 
 
 
