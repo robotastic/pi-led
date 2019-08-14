@@ -1,4 +1,5 @@
 #include <node/node.h>
+#include <napi.h>
 #include <node/node_object_wrap.h>
 #include <nan.h>
 
