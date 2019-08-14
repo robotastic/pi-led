@@ -47,5 +47,6 @@ private:
   uint8_t matrix[32]; // we are assuming the width is 32 and the height is 8
   void *reverseEndian(void *p, size_t size); 
 void selectChip();
+void clearChip();
 void sendCommand( uint8_t cmd);
 };

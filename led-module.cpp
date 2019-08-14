@@ -15,36 +15,46 @@ void * LedModule::reverseEndian(void *p, size_t size) {
   }
   return p;
 }
-void LedModule::selectChip()
+
+void LedModule::clearChip() {
+  digitalWrite(0,1);
+  digitalWrite(1,1);
+  digitalWrite(2,1);
+  digitalWrite(3,1);
+}
+void LedModule::selectChip(int chip)
 {
-	
   switch (chip) {
   case 0:
- digitalWrite(0,0);
- digitalWrite(1,0);
-
+  digitalWrite(0,0);
+  digitalWrite(1,1);
+  digitalWrite(2,1);
+  digitalWrite(3,1);
     break;
 
   case 1:
-
- digitalWrite(0,0); 
-digitalWrite(1,1);
-
+  digitalWrite(0,1);
+  digitalWrite(1,0);
+  digitalWrite(2,1);
+  digitalWrite(3,1);
     break;
 
   case 2:
- digitalWrite(0,1);
- digitalWrite(1,0);
+  digitalWrite(0,1);
+  digitalWrite(1,1);
+  digitalWrite(2,0);
+  digitalWrite(3,1);
     break;
 
   case 3:
- digitalWrite(0,1);
- digitalWrite(1,1);
+  digitalWrite(0,1);
+  digitalWrite(1,1);
+  digitalWrite(2,1);
+  digitalWrite(3,0);
     break;
 
 
   }
-  
 }
 
 void LedModule::clearMatrix()
@@ -112,6 +122,7 @@ void LedModule::writeMatrix(){
   selectChip();
   //sendCommand(LED_OFF);
   wiringPiSPIDataRW(0,output,size+1);
+  clearChip();
   
   data = WR;
   data <<= 7;
@@ -139,7 +150,7 @@ void LedModule::sendCommand( uint8_t cmd) {
   reverseEndian(&data, sizeof(data));
   selectChip();
   wiringPiSPIDataRW(0, (uint8_t *) &data, 2);
- 
+  clearChip();
 }
 
 void LedModule::blink(int blinky) {

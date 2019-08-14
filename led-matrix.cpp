@@ -10,7 +10,7 @@ modules = new LedModule[m];
 	fontWidth = 8;
 
 
-if (wiringPiSPISetup(0, 256000) <0)
+if (wiringPiSPISetup(0, 20000000) <0)
   cout <<  "SPI Setup Failed: " <<  strerror(errno) << endl;
 
  if (wiringPiSetup() == -1)
