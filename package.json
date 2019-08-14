@@ -12,6 +12,7 @@
         "node-gyp": "^5.0.3"
     },
     "dependencies": {
-        "node-addon-api": "^1.7.1"
-      }
+        "nan": "2.14.0",
+        "node-addon-api": "1.7.1"
+    }
 }

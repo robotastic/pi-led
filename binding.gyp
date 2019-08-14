@@ -5,7 +5,8 @@
       "sources": [ "pi-led.cpp" ],
       "dependencies": ["bit_array", "wiringPi", "wiringPiSPI", "<!(node -p \"require('node-addon-api').gyp\")"],
       'include_dirs': [
-            "<!@(node -p \"require('node-addon-api').include\")"
+            "<!@(node -p \"require('node-addon-api').include\")",
+            "<!(node -e \"require('nan')\")"
       ],
       'defines': [ 'NAPI_DISABLE_CPP_EXCEPTIONS' ]
     },
