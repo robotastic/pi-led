@@ -11,7 +11,12 @@
 #include <cstring>
 #include <iostream>
 #include "led-module.h"
+#include "font.h"
 
+extern "C"  {
+#include "wiringPiSPI.h"
+#include "wiringPi.h"
+}
 
 class LedMatrix {
 

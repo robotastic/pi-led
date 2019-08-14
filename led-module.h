@@ -13,6 +13,11 @@
 
 #include "bit_array.hpp"
 
+extern "C"  {
+#include "wiringPiSPI.h"
+#include "wiringPi.h"
+}
+
 #define COMMAND 0x4
 #define RD 0x6
 #define WR 0x5
