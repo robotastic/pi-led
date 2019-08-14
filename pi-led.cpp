@@ -30,7 +30,7 @@ class PiWorker : public Napi::AsyncWorker {
   // should go on `this`.
   void Execute () {
     ledMatrix = new LedMatrix(4);
-    ledMatrix->writeMessage(message->c_str());
+    ledMatrix->writeMessage(message.c_str());
   }
 
   // Executed when the async work is complete
@@ -61,7 +61,7 @@ Napi::Object Init(Napi::Env env, Napi::Object exports) {
    return exports;
 }
 
-NODE_MODULE(PiLed, Init)
+NODE_API_MODULE(NODE_GYP_MODULE_NAME, Init)
 
 
 
