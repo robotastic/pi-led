@@ -14,7 +14,6 @@
 
 
 extern "C"  {
-#include "font.h"
 #include "wiringPiSPI.h"
 #include "wiringPi.h"
 }
