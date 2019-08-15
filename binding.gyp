@@ -14,13 +14,14 @@
     },
    {
       "target_name": "led-matrix",
-      "dependencies": ["bit_array"],
+      "dependencies": ["bit_array", "led-module"],
       'include_dirs': [
             "<!@(node -p \"require('node-addon-api').include\")",
             "<!(node -e \"require('nan')\")",
             "/usr/local/include"
       ],
       "type": "static_library",
+      "libraries": [ "-L/usr/local/lib", "-lwiringPi" ],
       "sources": [ "led-matrix.cpp" ]
     },
     {
@@ -32,6 +33,7 @@
             "/usr/local/include"
       ],
       "type": "static_library",
+      "libraries": [ "-L/usr/local/lib", "-lwiringPi" ],
       "sources": [ "led-module.cpp" ]
     },
     {
