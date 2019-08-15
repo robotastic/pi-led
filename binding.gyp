@@ -9,7 +9,7 @@
             "<!(node -e \"require('nan')\")",
             "/usr/local/include"
       ],
-      "libraries": [ "-L/usr/local/lib", "-lwiringPi", "-lwiringPiSPI" ],
+      "libraries": [ "-L/usr/local/lib", "-lwiringPi" ],
       'defines': [ 'NAPI_DISABLE_CPP_EXCEPTIONS' ]
     },
    {
