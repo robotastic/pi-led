@@ -37,10 +37,9 @@ class PiWorker : public Napi::AsyncWorker {
   // this function will be run inside the main event loop
   // so it is safe to use JS engine data again
   void OnOK() {
-    Napi::Env env = info.Env();
     Napi::HandleScope scope(Env());
     Callback().Call({Env().Undefined(), Napi::Number::New(Env(), 1)});
-    emit.Call({Napi::String::New(env, "end")});
+    emit.Call({Napi::String::New(Env(), "end")});
   }
 
  private:
@@ -55,7 +54,7 @@ Napi::Value WriteMessage(const Napi::CallbackInfo& info) {
   Napi::Function emit = info[2].As<Napi::Function>();
   string message = info[0].As<Napi::String>().Utf8Value();
   Napi::Function callback = info[1].As<Napi::Function>();
-  PiWorker* piWorker = new PiWorker(callback, message);
+  PiWorker* piWorker = new PiWorker(callback, message, emit);
   piWorker->Queue();
   return info.Env().Undefined();
 }
