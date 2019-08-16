@@ -18,7 +18,9 @@
 var PiLed = require('bindings')('PiLed');
 
 const EventEmitter = require('events').EventEmitter
+const inherits = require('util').inherits
 
+inherits(PiLed, EventEmitter)
 
 const emitter = new EventEmitter()
 
@@ -34,7 +36,7 @@ emitter.on('end', () => {
 })
 
 
-PiLed.callEmit(emitter.emit.bind(emitter))
+
 export function writeMatrix(message, callback) {
   PiLed.writeMatrix(message, callback, emitter.emit.bind(emitter))
 };
