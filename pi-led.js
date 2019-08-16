@@ -20,7 +20,7 @@ var events = require('events');
 
 
 //console.log(PiLed);
-//inherits(PiLed, events.EventEmitter);
+util.inherits(PiLed, events.EventEmitter);
 exports.PiLed = PiLed;
 
 /*

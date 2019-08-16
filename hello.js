@@ -16,4 +16,8 @@ console.log(matrix.PiLed);
 });
 
 
+matrix.PiLed.on('FinishedWrite', function(s) {
+    console.log("Got This");
+});
+
 
