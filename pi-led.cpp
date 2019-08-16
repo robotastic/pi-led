@@ -39,6 +39,8 @@ class PiWorker : public Napi::AsyncWorker {
   void OnOK() {
     Napi::HandleScope scope(Env());
     Callback().Call({Env().Undefined(), Napi::Number::New(Env(), 1)});
+    Napi::Function emit = info[0].As<Napi::Function>();
+    emit.Call({Napi::String::New(env, "FinishedWrite")});
   }
 
  private:
