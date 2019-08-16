@@ -18,9 +18,7 @@
 var PiLed = require('bindings')('PiLed');
 
 const EventEmitter = require('events').EventEmitter
-const inherits = require('util').inherits
 
-inherits(PiLed, EventEmitter)
 
 const emitter = new EventEmitter()
 
