@@ -37,6 +37,7 @@ class PiWorker : public Napi::AsyncWorker {
   // this function will be run inside the main event loop
   // so it is safe to use JS engine data again
   void OnOK() {
+    Napi::Env env = info.Env();
     Napi::HandleScope scope(Env());
     Callback().Call({Env().Undefined(), Napi::Number::New(Env(), 1)});
     emit.Call({Napi::String::New(env, "end")});
@@ -44,6 +45,7 @@ class PiWorker : public Napi::AsyncWorker {
 
  private:
   string message;
+  Napi::Function& emit;
   LedMatrix *ledMatrix;
 };
 
