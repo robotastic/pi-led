@@ -33,5 +33,8 @@ emitter.on('end', () => {
     console.log('### END ###')
 })
 
+
 PiLed.callEmit(emitter.emit.bind(emitter))
-exports.PiLed = PiLed;
+export function writeMatrix(message, callback) {
+  PiLed.writeMatrix(message, callback, emitter.emit.bind(emitter))
+};

@@ -20,8 +20,8 @@ extern "C"  {
 
 class PiWorker : public Napi::AsyncWorker {
  public:
-  PiWorker(Napi::Function& callback, string message)
-    : Napi::AsyncWorker(callback), message(message) {}
+  PiWorker(Napi::Function& callback, string message, Napi::Function& emit )
+    : Napi::AsyncWorker(callback), message(message), emit(emit) {}
   ~PiWorker() {}
 
   // Executed inside the worker-thread.
@@ -39,8 +39,7 @@ class PiWorker : public Napi::AsyncWorker {
   void OnOK() {
     Napi::HandleScope scope(Env());
     Callback().Call({Env().Undefined(), Napi::Number::New(Env(), 1)});
-    Napi::Function emit = info[0].As<Napi::Function>();
-    emit.Call({Napi::String::New(env, "FinishedWrite")});
+    emit.Call({Napi::String::New(env, "end")});
   }
 
  private:
@@ -50,6 +49,8 @@ class PiWorker : public Napi::AsyncWorker {
 
 // Asynchronous access to the `Estimate()` function
 Napi::Value WriteMessage(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
+  Napi::Function emit = info[2].As<Napi::Function>();
   string message = info[0].As<Napi::String>().Utf8Value();
   Napi::Function callback = info[1].As<Napi::Function>();
   PiWorker* piWorker = new PiWorker(callback, message);
