@@ -56,7 +56,7 @@ Napi::Value WriteMessage(const Napi::CallbackInfo& info) {
   string message = info[0].As<Napi::String>().Utf8Value();
   Napi::Function callback = info[1].As<Napi::Function>();
   PiWorker* piWorker = new PiWorker(callback, message, emit);
-  emit.Call({Napi::String::New(Env(), "end")});
+  emit.Call({Napi::String::New(env, "end")});
   piWorker->Queue();
   return info.Env().Undefined();
 }
