@@ -133,7 +133,9 @@ void LedModule::writeMatrix(){
   data <<= 2;
 
   reverseEndian(&data, sizeof(data));
+  selectChip();
   wiringPiSPIDataRW(0, (uint8_t *) &data, 2);
+  clearChip();
   //sendCommand(LED_ON);
   free(output);
 }
