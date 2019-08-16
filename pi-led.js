@@ -17,6 +17,7 @@
 // javascript shim that lets our object inherit from EventEmitter
 var PiLed = require('bindings')('PiLed');
 var events = require('events');
+const util = require('util');
 
 
 //console.log(PiLed);
