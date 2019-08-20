@@ -20,8 +20,10 @@ extern "C"  {
 
 class PiWorker : public Napi::AsyncWorker {
  public:
-  PiWorker(Napi::Function& callback, string message, Napi::Function& emit )
-    : Napi::AsyncWorker(callback), message(message), emit(emit) {}
+  //PiWorker(Napi::Function& callback, string message, Napi::Function& emit )
+  //    : Napi::AsyncWorker(callback), message(message), emit(emit) {}
+  PiWorker(Napi::Function& callback, string message )  
+    : Napi::AsyncWorker(callback), message(message) {}
   ~PiWorker() {}
 
   // Executed inside the worker-thread.
@@ -45,18 +47,19 @@ class PiWorker : public Napi::AsyncWorker {
 
  private:
   string message;
-  Napi::Function& emit;
+  //Napi::Function& emit;
   LedMatrix *ledMatrix;
 };
 
 // Asynchronous access to the `Estimate()` function
 Napi::Value WriteMessage(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
-  Napi::Function emit = info[2].As<Napi::Function>();
+  //Napi::Function emit = info[2].As<Napi::Function>();
   string message = info[0].As<Napi::String>().Utf8Value();
   Napi::Function callback = info[1].As<Napi::Function>();
-  PiWorker* piWorker = new PiWorker(callback, message, emit);
-  emit.Call({Napi::String::New(env, "end")});
+  PiWorker* piWorker = new PiWorker(callback, message);
+  //PiWorker* piWorker = new PiWorker(callback, message, emit);
+  //emit.Call({Napi::String::New(env, "end")});
   piWorker->Queue();
   return info.Env().Undefined();
 }

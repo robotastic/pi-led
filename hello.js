@@ -1,23 +1,21 @@
 
-var matrix = require('./pi-led');
+var PiLed = require('./pi-led');
 
 
-console.log(matrix.PiLed);
-
+//var piLed = new PiLed()
+//console.log(piLed);
 
 //var matrix = new matrix.PiLed();
 
+PiLed.on('end', () => {
+    //console.log('### END ###')
+})
 
 
-
-	matrix.PiLed.writeMessage("Hello!", function(err, result) {
-
-	matrix.PiLed.writeMessage("Goodbye!", function(err, result) {});
+	PiLed.writeMessage("Hello!", function(err, result) {
+        //console.log("call back")
 });
 
 
-matrix.PiLed.on('FinishedWrite', function(s) {
-    console.log("Got This");
-});
 
 
