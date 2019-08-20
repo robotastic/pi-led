@@ -1,6 +1,7 @@
 #include <node/node.h>
 #include <napi.h>
 #include <node/node_object_wrap.h>
+
 #include <nan.h>
 
 
@@ -62,6 +63,7 @@ Napi::Value WriteMessage(const Napi::CallbackInfo& info) {
   //emit.Call({Napi::String::New(env, "end")});
   piWorker->Queue();
   return info.Env().Undefined();
+
 }
 
 
