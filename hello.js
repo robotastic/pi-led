@@ -13,10 +13,14 @@ PiLed.on('end', () => {
 
 
 	PiLed.writeMessage("Hello!", function(err, result) {
+        var message = "09:26PM 076" + String.fromCharCode(127) +" 90%";
+        PiLed.printMessage(message)
+        PiLed.printMessage("0123456789012345")
+        
         //console.log("call back")
 });
 
-PiLed.printMessage("09:26PM 076F 90%")
+
 
 
 
