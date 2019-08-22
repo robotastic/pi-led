@@ -16,6 +16,7 @@ PiLed.on('end', () => {
         //console.log("call back")
 });
 
+PiLed.printMessage("09:26PM 076F 90%")
 
 
 

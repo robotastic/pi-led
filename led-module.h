@@ -48,6 +48,7 @@ void setBrightness(uint8_t pwm);
 void blink(int blinky);
 void setChip(uint8_t c);
 uint8_t scrollMatrixOnce(uint8_t shift);
+uint8_t *getMatrix();
 private:
   uint8_t width, height, chip;
   uint8_t matrix[32]; // we are assuming the width is 32 and the height is 8

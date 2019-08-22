@@ -4,6 +4,9 @@ void LedModule::setChip(uint8_t c){
 	chip = c;
 }
 
+uint8_t *LedModule::getMatrix() {
+  return matrix;
+}
 void * LedModule::reverseEndian(void *p, size_t size) {
   char *head = (char *)p;
   char *tail = head + size -1;

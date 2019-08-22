@@ -5,10 +5,13 @@ const EventEmitter = require('events').EventEmitter
 exports = module.exports = new EventEmitter();
 
 exports.writeMessage = function(message, callback) {
-  var _this = this;
   PiLedCpp.writeMessage(message, function(value){
     callback(value);
     exports.emit('end');
   })
+};
+
+exports.printMessage = function(message) {
+  PiLedCpp.printMessage(message);
 };
 

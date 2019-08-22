@@ -11,7 +11,7 @@
 #include <cstring>
 #include <iostream>
 #include "led-module.h"
-
+#include <math.h> 
 
 extern "C"  {
 #include "wiringPiSPI.h"
@@ -24,6 +24,7 @@ public:
 	LedMatrix(int modules);
 	~LedMatrix();
 	void writeMessage(char const *message);
+	void printMessage(char const *message);
 	void drawPixel(uint8_t x, uint8_t y, uint8_t color);
 	void writeMatrix(); 
 	void printMatrix();
