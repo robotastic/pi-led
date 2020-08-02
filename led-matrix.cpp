@@ -11,8 +11,8 @@ LedMatrix::LedMatrix(int m) {
 modules = new LedModule[m];
 	fontWidth = 8;
 
-
-if (wiringPiSPISetup(0, 25000000) <0)
+matrixFd = wiringPiSPISetup(0, 25000000);
+if (matrixFd < 0)
   cout <<  "SPI Setup Failed: " <<  strerror(errno) << endl;
 
  if (wiringPiSetup() == -1)
@@ -32,6 +32,7 @@ for (i=0; i < m; i++) {
 
 LedMatrix::~LedMatrix() {
 	delete []modules;
+	close(matrixFd);
 }
 
 void LedMatrix::drawPixel(uint8_t x, uint8_t y, uint8_t color) {

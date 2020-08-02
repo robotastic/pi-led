@@ -36,6 +36,7 @@ private:
 	LedModule *modules;
 	uint8_t offscreen[8]; // font width;
 	int moduleNum;
+	int matrixFd ;
 	uint8_t fontWidth, _width, _height;
 };
 #endif
